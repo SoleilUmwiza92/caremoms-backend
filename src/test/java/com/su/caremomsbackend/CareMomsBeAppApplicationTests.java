@@ -1,4 +1,4 @@
-package com.su.careMoms_be_app;
+package com.su.caremomsbackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

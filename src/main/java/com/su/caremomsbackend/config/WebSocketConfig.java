@@ -1,4 +1,4 @@
-package com.su.careMoms_be_app.config;
+package com.su.caremomsbackend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

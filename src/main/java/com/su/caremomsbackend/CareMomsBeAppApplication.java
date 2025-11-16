@@ -1,4 +1,4 @@
-package com.su.careMoms_be_app;
+package com.su.caremomsbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

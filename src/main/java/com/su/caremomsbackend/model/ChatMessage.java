@@ -1,4 +1,4 @@
-package com.su.careMoms_be_app.model;
+package com.su.caremomsbackend.model;
 
 import java.util.Date;
 

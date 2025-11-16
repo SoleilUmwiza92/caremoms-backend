@@ -1,6 +1,6 @@
-package com.su.careMoms_be_app.controller;
+package com.su.caremomsbackend.controller;
 
-import com.su.careMoms_be_app.model.ChatMessage;
+import com.su.caremomsbackend.model.ChatMessage;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -46,3 +46,4 @@ class MessageControllerTest {
         assertEquals("bob", result.getNickname());
     }
 }
+

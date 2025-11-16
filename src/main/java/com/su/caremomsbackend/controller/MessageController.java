@@ -1,4 +1,4 @@
-package com.su.careMoms_be_app.controller;
+package com.su.caremomsbackend.controller;
 
 
 import java.util.Date;
@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import com.su.careMoms_be_app.model.ChatMessage;
+import com.su.caremomsbackend.model.ChatMessage;
 
 @Controller
 public class MessageController {

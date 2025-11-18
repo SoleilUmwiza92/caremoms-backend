@@ -34,7 +34,7 @@ jobs:
           java-version: "17"
 
       - name: Run Maven tests
-        working-directory: ./caremoms-backend
+        working-directory: caremoms-backend
         run: mvn -B test
 
       # --------------------------
@@ -67,13 +67,11 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: ./caremoms-backend
-          file: ./caremoms-backend/Dockerfile
+          context: caremoms-backend
+          file: caremoms-backend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Sign Docker image
         if: github.event_name != 'pull_request'

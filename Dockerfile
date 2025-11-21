@@ -1,27 +1,41 @@
-# Multi-stage build for Spring Boot application
+# ================================
+# 1. BUILD STAGE
+# ================================
 FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached layer)
+# Copy pom.xml separately to leverage Docker cache for dependencies
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN mvn -B dependency:go-offline
 
-# Copy source code and build
+# Copy source code and build JAR
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -B clean package -DskipTests
 
-# Runtime stage
+# ================================
+# 2. RUNTIME STAGE
+# ================================
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Copy the built JAR from build stage
+# Add a non-root user (security best practice)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy JAR from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port
+# Set permissions
+RUN chown appuser:appgroup app.jar
+
+USER appuser
+
+# Expose backend port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Use a more REST-friendly default JVM options (optional)
+ENV JAVA_OPTS="-Xms256m -Xmx512m"
 
+# Run Spring Boot app
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

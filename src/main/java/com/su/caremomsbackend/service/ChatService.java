@@ -3,46 +3,60 @@ package com.su.caremomsbackend.service;
 import com.su.caremomsbackend.model.ChatMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
-    private final List<ChatMessage> messages = new ArrayList<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
 
+    // Thread-safe in-memory storage
+    private final List<ChatMessage> messages = new CopyOnWriteArrayList<>();
+
+    // Save a new message
     public ChatMessage saveMessage(ChatMessage message) {
-        message.setId(idGenerator.getAndIncrement());
-        message.setTimestamp(System.currentTimeMillis());
+        if (message.getTimestamp() == null) {
+            message.setTimestamp(new Date());
+        }
         messages.add(message);
         return message;
     }
 
+    // Get all messages sorted by timestamp
     public List<ChatMessage> getAllMessages() {
-        return new ArrayList<>(messages);
-    }
-
-    public List<ChatMessage> getMessagesAfter(Long afterTimestamp) {
         return messages.stream()
-                .filter(m -> m.getTimestamp() > afterTimestamp)
+                .sorted(Comparator.comparing(ChatMessage::getTimestamp))
                 .collect(Collectors.toList());
     }
 
-    public List<ChatMessage> getMessagesByRoom(String roomId) {
+    // Get messages after a certain timestamp (for long-polling)
+    public List<ChatMessage> getMessagesAfter(Date timestamp) {
         return messages.stream()
-                .filter(m -> m.getRoomId().equals(roomId))
+                .filter(msg -> msg.getTimestamp().after(timestamp))
+                .sorted(Comparator.comparing(ChatMessage::getTimestamp))
                 .collect(Collectors.toList());
     }
 
-    public List<ChatMessage> getMessagesByRoomAfter(String roomId, Long afterTimestamp) {
-        return messages.stream()
-                .filter(m -> m.getRoomId().equals(roomId) && m.getTimestamp() > afterTimestamp)
-                .collect(Collectors.toList());
+    // Delete a message uniquely identified by (nickname + timestamp)
+    public void deleteMessage(String nickname, Date timestamp) {
+        messages.removeIf(msg ->
+                msg.getNickname().equals(nickname) &&
+                        msg.getTimestamp().equals(timestamp)
+        );
     }
 
-    public void deleteMessage(Long messageId) {
-        messages.removeIf(m -> m.getId().equals(messageId));
+    // Get the latest timestamp (for polling initialization)
+    public Date getLatestTimestamp() {
+        return messages.stream()
+                .map(ChatMessage::getTimestamp)
+                .max(Date::compareTo)
+                .orElse(new Date(0));
+    }
+
+    // Clear all messages
+    public void clearAllMessages() {
+        messages.clear();
     }
 }

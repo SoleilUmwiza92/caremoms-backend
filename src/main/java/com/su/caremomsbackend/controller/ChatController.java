@@ -3,9 +3,11 @@ package com.su.caremomsbackend.controller;
 import com.su.caremomsbackend.model.ChatMessage;
 import com.su.caremomsbackend.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -13,39 +15,49 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ChatController {
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatService chatService;
 
-    @PostMapping("/messages")
-    public ResponseEntity<ChatMessage> sendMessage(@RequestBody ChatMessage message) {
-        ChatMessage savedMessage = chatService.saveMessage(message);
-        return ResponseEntity.ok(savedMessage);
+    public ChatController(ChatService chatService) {
+        this.chatService = chatService;
     }
 
-    @GetMapping("/messages")
-    public ResponseEntity<List<ChatMessage>> getMessages(@RequestParam(required = false) Long afterTimestamp) {
-        if (afterTimestamp != null) {
-            return ResponseEntity.ok(chatService.getMessagesAfter(afterTimestamp));
-        } else {
-            return ResponseEntity.ok(chatService.getAllMessages());
-        }
+    // Get all messages
+    @GetMapping
+    public List<ChatMessage> getMessages() {
+        return chatService.getAllMessages();
     }
 
-    @GetMapping("/messages/room/{roomId}")
-    public ResponseEntity<List<ChatMessage>> getMessagesByRoom(
-            @PathVariable String roomId,
-            @RequestParam(required = false) Long afterTimestamp) {
-
-        if (afterTimestamp != null) {
-            return ResponseEntity.ok(chatService.getMessagesByRoomAfter(roomId, afterTimestamp));
-        } else {
-            return ResponseEntity.ok(chatService.getMessagesByRoom(roomId));
-        }
+    // Get messages after provided timestamp
+    @GetMapping("/after")
+    public List<ChatMessage> getMessagesAfter(
+            @RequestParam("timestamp")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            Date timestamp
+    ) {
+        return chatService.getMessagesAfter(timestamp);
     }
 
-    @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity<Void> deleteMessage(@PathVariable Long messageId) {
-        chatService.deleteMessage(messageId);
-        return ResponseEntity.noContent().build();
+    // Send message
+    @PostMapping
+    public ChatMessage sendMessage(@RequestBody ChatMessage message) {
+        return chatService.saveMessage(message);
+    }
+
+    // Delete message by nickname + timestamp
+    @DeleteMapping
+    public void deleteMessage(
+            @RequestParam("nickname") String nickname,
+            @RequestParam("timestamp")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            Date timestamp
+    ) {
+        chatService.deleteMessage(nickname, timestamp);
+    }
+
+    // Get latest timestamp
+    @GetMapping("/latest-timestamp")
+    public Date latestTimestamp() {
+        return chatService.getLatestTimestamp();
     }
 }
+

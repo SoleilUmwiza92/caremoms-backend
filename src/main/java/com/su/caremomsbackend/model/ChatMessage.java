@@ -1,34 +1,27 @@
 package com.su.caremomsbackend.model;
 
+import java.util.Date;
+
 public class ChatMessage {
-    private Long id;
-    private String roomId;
-    private String sender;
+
+    private String nickname;
     private String content;
-    private Long timestamp; // store as epoch millis
+    private Date timestamp;
 
     public ChatMessage() {}
 
-    public ChatMessage(Long id, String roomId, String sender, String content, Long timestamp) {
-        this.id = id;
-        this.roomId = roomId;
-        this.sender = sender;
+    public ChatMessage(String nickname, String content) {
+        this.nickname = nickname;
         this.content = content;
-        this.timestamp = timestamp;
+        this.timestamp = new Date();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getRoomId() { return roomId; }
-    public void setRoomId(String roomId) { this.roomId = roomId; }
-
-    public String getSender() { return sender; }
-    public void setSender(String sender) { this.sender = sender; }
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public Long getTimestamp() { return timestamp; }
-    public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
+    public Date getTimestamp() { return timestamp; }
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 }

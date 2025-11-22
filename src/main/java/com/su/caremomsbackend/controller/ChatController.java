@@ -21,11 +21,17 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    // Get all messages
+    // Get messages
     @GetMapping
     public List<ChatMessage> getMessages() {
         return chatService.getAllMessages();
     }
+
+    @GetMapping("/messages")
+    public List<ChatMessage> getAllMessagesAgain() {
+        return chatService.getAllMessages();
+    }
+
 
     // Get messages after provided timestamp
     @GetMapping("/after")

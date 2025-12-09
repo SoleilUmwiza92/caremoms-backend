@@ -1,33 +1,108 @@
-HELP.md
+##############################################
+# BUILD OUTPUT
+##############################################
 target/
-.mvn/wrapper/maven-wrapper.jar
+build/
+out/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+##############################################
+# MAVEN
+##############################################
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+mvnw
+mvnw.cmd
+
+
+##############################################
+# SPRING BOOT
+##############################################
+*.log
+spring.log
+*.tmp
+
+
+##############################################
+# ENV / SECRETS — IMPORTANT!!!
+##############################################
+.env
+.env.*
+application-local.properties
+application-prod.properties
+application-dev.properties
+# prevent leaking DB credentials & Supabase keys
+*.secret
+*.key
+*.pem
+
+
+##############################################
+# IDE SETTINGS
+##############################################
+
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Eclipse / STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
 
-### VS Code ###
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
 .vscode/
+
+
+##############################################
+# DOCKER
+##############################################
+docker-compose.override.yml
+docker-data/
+postgres-data/
+
+
+##############################################
+# OS-SPECIFIC
+##############################################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+
+##############################################
+# ARCHIVES
+##############################################
+*.zip
+*.tar.gz
+*.rar
+
+
+##############################################
+# MISC
+##############################################
+HELP.md

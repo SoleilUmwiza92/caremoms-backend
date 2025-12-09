@@ -3,13 +3,13 @@
 # ================================
 FROM maven:3.9-eclipse-temurin-17 AS build
 
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy pom.xml separately to leverage Docker cache for dependencies
+# Copy only pom.xml to download dependencies first (leveraging Docker cache)
 COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
-# Copy source code and build JAR
+# Copy source code and build the JAR
 COPY src ./src
 RUN mvn -B clean package -DskipTests
 
@@ -18,24 +18,27 @@ RUN mvn -B clean package -DskipTests
 # ================================
 FROM eclipse-temurin:17-jre-alpine
 
-WORKDIR /app
-
-# Add a non-root user (security best practice)
+# Create a non-root user and group
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy JAR from build stage
-COPY --from=build /app/target/*.jar app.jar
+WORKDIR /app
 
-# Set permissions
-RUN chown appuser:appgroup app.jar
+# Copy JAR from the build stage
+COPY --from=build /workspace/target/*.jar ./app.jar
 
+# Ensure the JAR is owned by the non-root user
+RUN chown appuser:appgroup ./app.jar
+
+# Switch to non-root user
 USER appuser
 
 # Expose backend port
 EXPOSE 8080
 
-# Use a more REST-friendly default JVM options (optional)
-ENV JAVA_OPTS="-Xms256m -Xmx512m"
+# JVM options: container-aware settings and tuning for development
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -Djava.security.egd=file:/dev/./urandom"
+# Activate Spring profile (override via environment)
+ENV SPRING_PROFILES_ACTIVE=docker
 
-# Run Spring Boot app
+# Launch the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

@@ -113,5 +113,5 @@ jobs:
       - name: 🚀 Deploy to Railway (Auto-Deploy)
         run: railway up --ci
         env:
-          RAILWAY_TOKEN:b6fba28e-9786-4c72-961c-227b4db19d9d
+         RAILWAY_TOKEN: ${{ b6fba28e-9786-4c72-961c-227b4db19d9d }}
 

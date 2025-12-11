@@ -1,44 +1,75 @@
-# ================================
-# 1. BUILD STAGE
-# ================================
+# ============================================================
+# 1. BUILD STAGE — uses full JDK & Maven
+# ============================================================
 FROM maven:3.9-eclipse-temurin-17 AS build
 
+# Use a non-root workspace
 WORKDIR /workspace
 
-# Copy only pom.xml to download dependencies first (leveraging Docker cache)
+# Copy only the POM first (maximizes Docker cache efficiency)
 COPY pom.xml .
-RUN mvn -B dependency:go-offline
+RUN mvn -B -q dependency:go-offline
 
-# Copy source code and build the JAR
+# Copy source code
 COPY src ./src
-RUN mvn -B clean package -DskipTests
 
-# ================================
-# 2. RUNTIME STAGE
-# ================================
-FROM eclipse-temurin:17-jre-alpine
+# Build the application (skip tests for faster CI)
+RUN mvn -B -q clean package -DskipTests
 
-# Create a non-root user and group
+
+# ============================================================
+# 2. RUNTIME STAGE — ultra-light, secure JRE
+# ============================================================
+FROM eclipse-temurin:17-jre-alpine AS runtime
+
+# ===========================
+# SECURITY HARDENING
+# ===========================
+# Install minimal dependencies only
+RUN apk add --no-cache curl
+
+# Create non-root user/group
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-# Copy JAR from the build stage
-COPY --from=build /workspace/target/*.jar ./app.jar
+# Copy the JAR from the container build stage
+COPY --from=build /workspace/target/*.jar /app/app.jar
 
-# Ensure the JAR is owned by the non-root user
-RUN chown appuser:appgroup ./app.jar
+# Adjust file permissions
+RUN chown -R appuser:appgroup /app
 
-# Switch to non-root user
+# Switch to non-root user for security
 USER appuser
 
-# Expose backend port
+# ===========================
+# RUNTIME CONFIGURATION
+# ===========================
 EXPOSE 8080
 
-# JVM options: container-aware settings and tuning for development
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -Djava.security.egd=file:/dev/./urandom"
-# Activate Spring profile (override via environment)
+# JVM Flags:
+# - Container-aware sizing
+# - Disable biased locking
+# - Fast entropy for secure random
+# - Prefer IPv4 (works better inside containers)
+ENV JAVA_OPTS="\
+  -XX:+UseContainerSupport \
+  -XX:MaxRAMPercentage=75 \
+  -Djava.security.egd=file:/dev/./urandom \
+  -Djava.net.preferIPv4Stack=true \
+"
+
+# Spring Boot active profile
 ENV SPRING_PROFILES_ACTIVE=docker
 
-# Launch the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# ===========================
+# HEALTHCHECK
+# Best practice – ensures Railway/Vercel/Docker detect crashes
+# ===========================
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fs http://localhost:8080/actuator/health || exit 1
+
+# ===========================
+# ENTRYPOINT
+# ===========================
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

@@ -1,0 +1,84 @@
+name: Backend CI + Security Scan
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ==============================
+      # ✅ CHECKOUT
+      # ==============================
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # ==============================
+      # ✅ JAVA SETUP
+      # ==============================
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+
+      # ==============================
+      # ✅ RUN TESTS
+      # ==============================
+      - name: Run Tests
+        run: mvn -B test
+
+
+      # ==============================
+      # ✅ BUILD JAR
+      # ==============================
+      - name: Build JAR
+        run: mvn -B package -DskipTests
+
+
+      # ==============================
+      # ✅ BUILD DOCKER IMAGE
+      # ==============================
+      - name: Build Docker Image
+        run: |
+          docker build -t caremoms-backend:latest .
+
+
+      # ==============================
+      # ✅ TRIVY IMAGE VULNERABILITY SCAN
+      # ==============================
+      - name: Trivy Image Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: caremoms-backend:latest
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+
+      # ==============================
+      # ✅ TRIVY DOCKERFILE MISCONFIG SCAN
+      # ==============================
+      - name: Trivy Dockerfile Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          format: table
+          exit-code: 1
+
+
+      # ==============================
+      # ✅ OPTIONAL: PUSH TO REGISTRY
+      # ==============================
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false # ✅ set to true when you add a registry
+          tags: backend:latest

@@ -1,5 +1,4 @@
 {
-  "projectId": "d94fc88a-69ce-4a42-98b6-3cb72f4458df",
   "services": {
     "caremoms-backend": {
       "path": "."

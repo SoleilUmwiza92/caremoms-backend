@@ -161,19 +161,20 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>9.0.9</version>
                 <configuration>
-                    <!-- Fail build if CVSS score ≥ 7 -->
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <failBuildOnCVSS>7</failBuildOnCVSS>
-                    <format>HTML</format>
-                    <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
-                        </goals>
+                       </goals>
                     </execution>
-                </executions>
+               </executions>
             </plugin>
 
         </plugins>

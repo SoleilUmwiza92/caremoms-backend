@@ -63,7 +63,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
 
-      # =========================
+      # ========================
       # 7. Package application
       # =========================
       - name: Build JAR

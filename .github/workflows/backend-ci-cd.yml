@@ -51,18 +51,4 @@ jobs:
           scan-ref: .
           severity: HIGH,CRITICAL
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: security-scan
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
-
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway deploy 
+  

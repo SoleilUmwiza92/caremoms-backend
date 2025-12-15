@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.su</groupId>
-    <artifactId>careMoms-be-app</artifactId>
+    <artifactId>caremoms-be-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>caremoms-backend</name>
-    <description>Spring Boot backend for CareMoms platform (REST + Supabase Auth)</description>
+    <description>Spring Boot backend for Caremoms platform (REST + Supabase Auth)</description>
 
     <properties>
         <java.version>17</java.version>
@@ -43,7 +43,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- SPRING SECURITY (JWT Resource Server) -->
+        <!-- SPRING SECURITY -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -116,7 +116,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Lombok Annotation Processor & Java Compiler Configuration -->
+            <!-- Java Compiler + Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -150,6 +150,27 @@
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--OWASP Dependency-Check (Security Best Practice) -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>9.0.9</version>
+                <configuration>
+                    <!-- Fail build if CVSS score ≥ 7 -->
+                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <format>HTML</format>
+                    <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>

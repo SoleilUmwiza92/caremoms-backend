@@ -21,6 +21,7 @@ public class MessageService {
         m.setSender(sender);
         m.setRoomId(dto.getRoomId());
         m.setContent(dto.getContent());
+        m.setReceiver(dto.getReceiverId());
         m.setCreatedAt(Instant.now());
         return repo.save(m);
     }

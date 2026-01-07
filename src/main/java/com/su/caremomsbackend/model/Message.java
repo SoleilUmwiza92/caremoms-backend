@@ -26,6 +26,9 @@ public class Message {
     @JoinColumn(name = "sender_id")
     private User sender;
 
+    @Column(nullable = false,name = "to_user_id")
+    private String receiver;
+
     private Instant createdAt;
 
     @PrePersist

@@ -6,5 +6,5 @@ import lombok.Data;
 public class UserSyncRequest {
     private String supabaseId;
     private String email;
-    private String displayName;
+    private String userName;
 }

@@ -23,8 +23,9 @@ public class User {
 
     private String email;
 
-    @Column(name = "display_name")
-    private String displayName;
+    private String role;
+    @Column(name = "user_name")
+    private String userName;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

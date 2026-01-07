@@ -4,11 +4,12 @@ import com.su.caremomsbackend.dto.SendMessageRequest;
 import com.su.caremomsbackend.model.Message;
 import com.su.caremomsbackend.model.User;
 import com.su.caremomsbackend.service.MessageService;
+import com.su.caremomsbackend.service.TokenValidationService;
 import com.su.caremomsbackend.service.UserSyncService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,17 +17,32 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/messages")
+@Slf4j
 public class MessageController {
 
     private final MessageService messageService;
     private final UserSyncService userSyncService;
+    private final TokenValidationService tokenValidationService;
 
     @PostMapping
     public ResponseEntity<Message> send(@RequestBody SendMessageRequest dto,
-                                        @AuthenticationPrincipal Jwt jwt) {
+                                        HttpServletRequest request) {
+        // If user is NOT logged in yet → allow frontend to continue silently
+        if (!tokenValidationService.validateToken(request) && tokenValidationService.getAdminUser(request) == null) {
+            log.error("Authentication validation failed");
+            return ResponseEntity.status(401).build();
+        }
 
-        User u = userSyncService.getOrCreate(jwt);
-        return ResponseEntity.ok(messageService.send(dto, u));
+        User user=null;
+        if(request.getHeader("Authorization") !=null){
+            String token= request.getHeader("Authorization").substring(7);
+            user = userSyncService.getOrCreate(token);
+        }else{
+            user = tokenValidationService.getAdminUser(request);
+        }
+
+        log.info("User {} calling {}",user.getUserName(), dto.getContent());
+        return ResponseEntity.ok(messageService.send(dto, user));
     }
 
     @GetMapping("/{roomId}")
@@ -38,9 +54,13 @@ public class MessageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id,
-                                       @AuthenticationPrincipal Jwt jwt) {
-
-        User u = userSyncService.getOrCreate(jwt);
+                                       HttpServletRequest request) {
+        if (!tokenValidationService.validateToken(request)) {
+            log.error("Authentication validation failed for deletion");
+            return ResponseEntity.status(401).build();
+        }
+        String token= request.getHeader("Authorization").substring(7);
+        User u = userSyncService.getOrCreate(token);
         messageService.deleteIfOwner(id, u);
         return ResponseEntity.noContent().build();
     }

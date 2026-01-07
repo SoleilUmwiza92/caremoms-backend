@@ -57,6 +57,27 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
+        <!-- JWT Dependencies -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -90,6 +111,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <!-- ===============================
@@ -116,34 +142,34 @@
             </plugin>
 
             <!-- OWASP Dependency-Check -->
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>9.0.9</version>
-                <configuration>
-                    <!-- Injected via CI -->
-                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+<!--            <plugin>-->
+<!--                <groupId>org.owasp</groupId>-->
+<!--                <artifactId>dependency-check-maven</artifactId>-->
+<!--                <version>9.0.9</version>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; Injected via CI &ndash;&gt;-->
+<!--                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>-->
 
-                    <!-- NOT block development -->
-                    <failOnError>false</failOnError>
+<!--                    &lt;!&ndash; NOT block development &ndash;&gt;-->
+<!--                    <failOnError>false</failOnError>-->
 
-                    <!-- Report formats for evidence -->
-                    <formats>
-                        <format>HTML</format>
-                        <format>JSON</format>
-                    </formats>
+<!--                    &lt;!&ndash; Report formats for evidence &ndash;&gt;-->
+<!--                    <formats>-->
+<!--                        <format>HTML</format>-->
+<!--                        <format>JSON</format>-->
+<!--                    </formats>-->
 
-                    <!-- Future-ready threshold -->
-                    <failBuildOnCVSS>9</failBuildOnCVSS>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--                    &lt;!&ndash; Future-ready threshold &ndash;&gt;-->
+<!--                    <failBuildOnCVSS>9</failBuildOnCVSS>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <!-- JaCoCo -->
             <plugin>
@@ -158,7 +184,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 

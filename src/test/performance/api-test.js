@@ -12,7 +12,7 @@ export let options = {
 
 export default function () {
   let data={roomId:'2',content:'Bonjour mon amis',receiverId:'2'}
-  let res = http.post('http://localhost:8080/api/messages', JSON.stringify(data), {
+  let res = http.post('https://caremoms.up.railway.app/api/messages', JSON.stringify(data), {
                                                                 headers: { 'Content-Type': 'application/json', 'Admin': 'joe.doe@gmail.com'}});
   check(res, {
     'response status is 200': (r) => r.status === 200,

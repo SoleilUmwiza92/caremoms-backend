@@ -5,6 +5,7 @@ import com.su.caremomsbackend.model.Message;
 import com.su.caremomsbackend.model.User;
 import com.su.caremomsbackend.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageService {
 
     private final MessageRepository repo;
@@ -23,6 +25,7 @@ public class MessageService {
         m.setContent(dto.getContent());
         m.setReceiver(dto.getReceiverId());
         m.setCreatedAt(Instant.now());
+        log.info("Sending message ''''");
         return repo.save(m);
     }
 

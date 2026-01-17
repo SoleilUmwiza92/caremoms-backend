@@ -31,6 +31,6 @@ public class AuthSyncController {
         }
         String token= request.getHeader("Authorization").substring(7);
         // Only sync when token is validated successfully
-        return ResponseEntity.ok(userSyncService.getOrCreate(token));
+        return ResponseEntity.ok(userSyncService.getUserDetails(token));
     }
 }

@@ -37,7 +37,7 @@ public class CommentController {
             return ResponseEntity.status(401).build();
         }
         String token= request.getHeader("Authorization").substring(7);
-        User u = userSyncService.getOrCreate(token);
+        User u = userSyncService.getUserDetails(token);
         Post p = postService.require(postId);
         return ResponseEntity.ok(commentService.add(dto, u, p));
     }

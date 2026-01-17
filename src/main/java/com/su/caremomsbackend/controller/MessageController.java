@@ -36,7 +36,7 @@ public class MessageController {
         User user=null;
         if(request.getHeader("Authorization") !=null){
             String token= request.getHeader("Authorization").substring(7);
-            user = userSyncService.getOrCreate(token);
+            user = userSyncService.getUserDetails(token);
         }else{
             user = tokenValidationService.getAdminUser(request);
         }
@@ -60,7 +60,7 @@ public class MessageController {
             return ResponseEntity.status(401).build();
         }
         String token= request.getHeader("Authorization").substring(7);
-        User u = userSyncService.getOrCreate(token);
+        User u = userSyncService.getUserDetails(token);
         messageService.deleteIfOwner(id, u);
         return ResponseEntity.noContent().build();
     }

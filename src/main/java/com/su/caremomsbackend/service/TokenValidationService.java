@@ -48,10 +48,10 @@ public class TokenValidationService {
     public String extractRole(String token){
         return extractClaim(token, claims -> {
             HashMap<?, ?> userMetadata = claims.get("user_metadata", HashMap.class);
-            if (userMetadata != null) {
+            if (userMetadata != null && userMetadata.get("role") != null) {
                 return userMetadata.get("role").toString();
             }
-            return null;
+            return "Regular";
         });
     }
     public String extractEmail(String token) {

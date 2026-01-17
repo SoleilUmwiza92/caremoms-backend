@@ -16,7 +16,7 @@ export default function () {
                                                                 headers: { 'Content-Type': 'application/json', 'Admin': 'joe.doe@gmail.com'}});
   check(res, {
     'response status is 200': (r) => r.status === 200,
-    'response time is < 500ms': (r) => r.timings.duration < 500,
+    'response time is > 500ms': (r) => r.timings.duration < 500,
   });
 
   sleep(1);

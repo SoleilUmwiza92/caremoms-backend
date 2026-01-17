@@ -27,6 +27,9 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name="date_of_birth")
+    private String dob;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

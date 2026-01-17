@@ -31,7 +31,7 @@ public class PostController {
             return ResponseEntity.status(401).build();
         }
         String token= request.getHeader("Authorization").substring(7);
-        User u = userSyncService.getOrCreate(token);
+        User u = userSyncService.getUserDetails(token);
         return ResponseEntity.ok(postService.create(dto, u));
     }
 

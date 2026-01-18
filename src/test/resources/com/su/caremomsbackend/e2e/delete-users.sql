@@ -1,0 +1,1 @@
+DELETE FROM "public"."users" where supabase_id IN ('cxdsfreywhjnfgtjsks145587965248ghtdfrsdetfr','0efe4557-6499-45ce-a062-dcdfd412582agfredfrd');

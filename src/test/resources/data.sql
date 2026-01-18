@@ -1,0 +1,1 @@
+INSERT INTO "public"."users" ( "created_at", "date_of_birth", "email", "role", "supabase_id", "updated_at", "user_name") VALUES ( '2026-01-17 17:00:28+00', '12/12/2000', 'john.doe2@example.com', 'Regular', 'cxdsfreywhjnfgtjsks145587965248ghtdfdraer', '2026-01-17 17:01:28+00', 'John doe2');

@@ -28,7 +28,7 @@ public class MessageController {
     public ResponseEntity<Message> send(@RequestBody SendMessageRequest dto,
                                         HttpServletRequest request) {
         // If user is NOT logged in yet → allow frontend to continue silently
-        if (!tokenValidationService.validateToken(request) && tokenValidationService.getAdminUser(request) == null) {
+        if (!tokenValidationService.validateToken(request) && tokenValidationService.getAdminUser(request.getHeader("Admin")) == null) {
             log.error("Authentication validation failed");
             return ResponseEntity.status(401).build();
         }
@@ -38,7 +38,7 @@ public class MessageController {
             String token= request.getHeader("Authorization").substring(7);
             user = userSyncService.getUserDetails(token);
         }else{
-            user = tokenValidationService.getAdminUser(request);
+            user = tokenValidationService.getAdminUser(request.getHeader("Admin"));
         }
 
         log.info("User {} calling {}",user.getUserName(), dto.getContent());

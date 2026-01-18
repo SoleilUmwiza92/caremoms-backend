@@ -26,7 +26,7 @@ public class Message {
     @JoinColumn(name = "sender_id")
     private User sender;
 
-    @Column(nullable = false,name = "to_user_id")
+    @Column(nullable = false,name = "to_user_email")
     private String receiver;
 
     private Instant createdAt;

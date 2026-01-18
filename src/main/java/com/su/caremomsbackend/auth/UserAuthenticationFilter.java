@@ -50,7 +50,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
         }
         User adminUser=null;
         if(adminHeader !=null){
-            adminUser = tokenValidationService.getAdminUser(request);
+            adminUser = tokenValidationService.getAdminUser(adminHeader);
             personRole= adminUser.getRole();
             personId = String.valueOf(adminUser.getId());
             personName = adminUser.getUserName();

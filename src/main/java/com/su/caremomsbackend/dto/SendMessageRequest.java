@@ -6,5 +6,5 @@ import lombok.Data;
 public class SendMessageRequest {
     private String roomId;
     private String content;
-    private String receiverId;
+    private String receiverEmail;
 }

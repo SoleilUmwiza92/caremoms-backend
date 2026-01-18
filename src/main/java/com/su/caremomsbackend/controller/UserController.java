@@ -26,9 +26,13 @@ public class UserController {
             log.error("Authentication validation failed");
             return ResponseEntity.status(401).build();
         }
-        String token=request.getHeader("Authorization").substring(7);
-        log.info("Token is valid");
-        return ResponseEntity.ok(UserResponse.fromEntity(userSyncService.getUserDetails(token)));
+        if(request.getHeader("Authorization") !=null){
+            String token= request.getHeader("Authorization").substring(7);
+            return ResponseEntity.ok(UserResponse.fromEntity(userSyncService.getUserDetails(token)));
+        }else if(request.getHeader("Admin") !=null){
+            return ResponseEntity.ok(UserResponse.fromEntity(tokenValidationService.getAdminUser(request.getHeader("Admin"))));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/me")
@@ -48,7 +52,6 @@ public class UserController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody User update,HttpServletRequest request
     ) {
-        String token= authHeader.substring(7);
 
         if (!tokenValidationService.validateToken(request)) {
             log.error("Update failed, Authentication validation failed");
@@ -59,13 +62,21 @@ public class UserController {
         if(updatedUser != null){
             return ResponseEntity.ok(UserResponse.fromEntity(updatedUser));
         }
-        return ResponseEntity.status(500).build();
+        return ResponseEntity.notFound().build();
+    }
 
-//                userRepository.findBySupabaseId(jwt.getSubject())
-//                .map(user -> {
-//                    user.setDisplayName(update.getDisplayName());
-//                    return ResponseEntity.ok(userRepository.save(user));
-//                })
-//                .orElse(ResponseEntity.notFound().build());
+    @DeleteMapping("/me")
+    public ResponseEntity<String> delete(HttpServletRequest request){
+        if (!tokenValidationService.validateToken(request)) {
+            log.error("Delete user account failed, Authentication validation failed");
+            return ResponseEntity.status(401).build();
+        }
+        String token= request.getHeader("Authorization").substring(7);
+        User user = userSyncService.getUserDetails(token);
+        if(user != null){
+            userSyncService.removeUserAccount(user);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

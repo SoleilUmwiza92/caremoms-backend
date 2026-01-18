@@ -23,7 +23,7 @@ public class MessageService {
         m.setSender(sender);
         m.setRoomId(dto.getRoomId());
         m.setContent(dto.getContent());
-        m.setReceiver(dto.getReceiverId());
+        m.setReceiver(dto.getReceiverEmail());
         m.setCreatedAt(Instant.now());
         log.info("Sending message ''''");
         return repo.save(m);

@@ -65,4 +65,8 @@ public class UserSyncService {
         newUser.setEmail(email);
         return newUser;
     }
+
+    public void removeUserAccount(User user){
+        userRepository.delete(user);
+    }
 }

@@ -1,11 +1,18 @@
 package com.su.caremomsbackend.e2e;
 
-import org.junit.jupiter.api.Assumptions;
+import com.su.caremomsbackend.integration.TestContainersConfiguration;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+@Testcontainers
+@Import(TestContainersConfiguration.class)
+@Sql(scripts = "insert-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "delete-users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 class MessagesApiE2ETest extends RestAssuredTestBase {
 
     @Test
@@ -14,11 +21,12 @@ class MessagesApiE2ETest extends RestAssuredTestBase {
       {
         "roomId":"2",
         "content":"Any update?",
-        "receiverId":2
+        "receiverEmail": "soleilmwiza1@example.com"
       }
       """;
 
         given()
+                .port(port)
                 .contentType("application/json")
                 .accept("application/json")
                 .body(payload)
@@ -29,10 +37,8 @@ class MessagesApiE2ETest extends RestAssuredTestBase {
     }
 
     @Test
-    void shouldCreateMessage_WithValidToken() {
-        String token = System.getenv("API_TOKEN");
-        Assumptions.assumeTrue(token != null && !token.isBlank(),
-                "Skipping because API_TOKEN is not set.");
+    @Sql(scripts = "delete-messages.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldCreateMessage_user_with_access() {
 
         String uniqueContent = "Any update? e2e-" + System.currentTimeMillis();
 
@@ -40,14 +46,15 @@ class MessagesApiE2ETest extends RestAssuredTestBase {
       {
         "roomId":"2",
         "content":"%s",
-        "receiverId":2
+        "receiverEmail": "soleilmwiza1@example.com"
       }
       """.formatted(uniqueContent);
 
         given()
+                .port(port)
                 .contentType("application/json")
                 .accept("application/json")
-                .header("Authorization", "Bearer " + token)
+                .header("Admin", "joe.doe@example.com")
                 .body(payload)
                 .when()
                 .post("/api/messages")
@@ -57,7 +64,7 @@ class MessagesApiE2ETest extends RestAssuredTestBase {
                 .body("id", allOf(notNullValue(), greaterThan(0)))
                 .body("roomId", equalTo("2"))
                 .body("content", equalTo(uniqueContent))
-                .body("receiver", equalTo("2"))
+                .body("receiver", equalTo("soleilmwiza1@example.com"))
                 .body("createdAt", allOf(notNullValue(), matchesPattern("^\\d{4}-\\d{2}-\\d{2}T.*Z$")))
                 .body("sender", notNullValue())
                 .body("sender.id", allOf(notNullValue(), greaterThan(0)))

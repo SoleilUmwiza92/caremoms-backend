@@ -93,10 +93,11 @@ public class TokenValidationService {
     public Boolean validateToken(HttpServletRequest request) {
         try {
             if(isNotBlank(request.getHeader("Authorization"))) {
+
                 String token = request.getHeader("Authorization").substring(7);
                 return !isTokenExpired(token);
             }
-            return isNotBlank(request.getHeader("Admin")) && getAdminUser(request)!= null;
+            return isNotBlank(request.getHeader("Admin")) && getAdminUser(request.getHeader("Admin"))!= null;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,8 +110,8 @@ public class TokenValidationService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public User getAdminUser(HttpServletRequest request){
-        String adminUser= request.getHeader("Admin");
+    public User getAdminUser(String adminUser){
+       // String adminUser= request.getHeader("Admin");
         if(!adminUser.isBlank()) {
             log.info("Admin use is {}", adminUser);
             User user =userRepository.findByEmail(adminUser).orElse(null);

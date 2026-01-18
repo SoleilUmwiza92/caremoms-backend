@@ -1,0 +1,1 @@
+DELETE FROM "public"."messages" where to_user_email='soleilmwiza1@example.com';

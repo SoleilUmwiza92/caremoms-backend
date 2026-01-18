@@ -29,6 +29,7 @@ class MessagesApiE2ETest extends RestAssuredTestBase {
                 .port(port)
                 .contentType("application/json")
                 .accept("application/json")
+                .header("Admin", "any string")
                 .body(payload)
                 .when()
                 .post("/api/messages")

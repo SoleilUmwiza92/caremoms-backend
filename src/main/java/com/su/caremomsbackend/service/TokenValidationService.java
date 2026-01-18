@@ -111,7 +111,6 @@ public class TokenValidationService {
     }
 
     public User getAdminUser(String adminUser){
-       // String adminUser= request.getHeader("Admin");
         if(!adminUser.isBlank()) {
             log.info("Admin use is {}", adminUser);
             User user =userRepository.findByEmail(adminUser).orElse(null);
